@@ -1,0 +1,50 @@
+{
+  "totals_seconds": {
+    "YouTube Shorts": 159,
+    "Instagram Reels": 370,
+    "TikTok": 0,
+    "Facebook Reels": 0,
+    "Snapchat Spotlight": 0
+  },
+  "totals_readable": {
+    "YouTube Shorts": "2m 39s",
+    "Instagram Reels": "6m 10s",
+    "TikTok": "0s",
+    "Facebook Reels": "0s",
+    "Snapchat Spotlight": "0s"
+  },
+  "sessions": [
+    {
+      "platform": "YouTube Shorts",
+      "url": "https://www.youtube.com/shorts/5rdcnAlriDU",
+      "start": "2026-04-29T01:14:59.337415",
+      "end": "2026-04-29T01:15:14.481803",
+      "duration_seconds": 15,
+      "duration_readable": "15s"
+    },
+    {
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reels/DXsXGRkCrAE/",
+      "start": "2026-04-29T01:16:34.122369",
+      "end": "2026-04-29T01:20:24.214587",
+      "duration_seconds": 230,
+      "duration_readable": "3m 50s"
+    },
+    {
+      "platform": "YouTube Shorts",
+      "url": "https://www.youtube.com/shorts/MI07WCUYwkQ",
+      "start": "2026-04-29T01:20:24.215658",
+      "end": "2026-04-29T01:22:48.443669",
+      "duration_seconds": 144,
+      "duration_readable": "2m 24s"
+    },
+    {
+      "platform": "Instagram Reels",
+      "url": "https://www.instagram.com/reels/DXsiQftEgYO/",
+      "start": "2026-04-29T01:22:48.444662",
+      "end": "2026-04-29T01:25:08.851606",
+      "duration_seconds": 140,
+      "duration_readable": "2m 20s"
+    }
+  ]
+}
