@@ -3,19 +3,62 @@ import "./App.css";
 const weekStart = "Apr 28";
 const weekEnd = "May 4";
 
-const currentData = [
-  { name: "Alice", value: 120 },
-  { name: "Bob", value: 95 },
-  { name: "Charlie", value: 140 },
-  { name: "Dana", value: 80 },
-];
+// load all logs
+const files = import.meta.glob("./data/short_form_log_*.json", { eager: true });
 
-const previousData = [
-  { name: "Alice", value: 100 },
-  { name: "Bob", value: 130 },
-  { name: "Charlie", value: 90 },
-  { name: "Dana", value: 85 },
-];
+function extractName(path) {
+  const match = path.match(/short_form_log_(.*)\.json$/);
+  return match ? match[1] : "Unknown";
+}
+
+function getTotalSeconds(log) {
+  return Object.values(log.totals_seconds).reduce(
+    (sum, seconds) => sum + seconds,
+    0
+  );
+}
+
+function getTotalMinutes(log) {
+  return Math.round(getTotalSeconds(log) / 60);
+}
+
+function getTopSource(log) {
+  const entries = Object.entries(log.totals_seconds);
+
+  const [topPlatform, topSeconds] = entries.reduce(
+    (best, current) => {
+      return current[1] > best[1] ? current : best;
+    },
+    ["None", 0]
+  );
+
+  if (topSeconds === 0) return null;
+  return topPlatform;
+}
+
+function getIconPath(platform) {
+  switch (platform) {
+    case "YouTube Shorts":
+      return "/icons/youtube.png";
+    case "Instagram Reels":
+      return "/icons/instagram.png";
+    case "TikTok":
+      return "/icons/tiktok.png";
+    default:
+      return null;
+  }
+}
+
+const currentData = Object.entries(files).map(([path, data]) => {
+  const log = data.default ?? data;
+  const topSource = getTopSource(log);
+
+  return {
+    name: extractName(path),
+    value: getTotalMinutes(log),
+    iconPath: getIconPath(topSource),
+  };
+});
 
 function getRankedData(data) {
   return [...data]
@@ -41,13 +84,15 @@ function getSuffix(place) {
   }
 }
 
-function Leaderboard({ currentData, previousData }) {
-  const currentRanked = getRankedData(currentData);
-  const previousRanked = getRankedData(previousData);
+// HARD CODED CHANGE
+function getFakeChange(place) {
+  if (place === 1) return <span className="up">▲</span>;
+  if (place === 2) return <span className="down">▼</span>;
+  return <span className="same">-</span>;
+}
 
-  const previousPlaces = new Map(
-    previousRanked.map((row) => [row.name, row.place])
-  );
+function Leaderboard({ currentData }) {
+  const currentRanked = getRankedData(currentData);
 
   return (
     <div className="card">
@@ -63,30 +108,37 @@ function Leaderboard({ currentData, previousData }) {
             <th>Place</th>
             <th>User</th>
             <th>Minutes</th>
+            <th>Top</th>
             <th>Change</th>
           </tr>
         </thead>
 
         <tbody>
-          {currentRanked.map((row) => {
-            const oldPlace = previousPlaces.get(row.name);
-            const change = oldPlace ? oldPlace - row.place : 0;
+          {currentRanked.map((row) => (
+            <tr key={row.name} className={row.place === 1 ? "first" : ""}>
+              <td>{getSuffix(row.place)}</td>
+              <td className="name">{row.name}</td>
+              <td>{row.value}</td>
 
-            return (
-              <tr key={row.name} className={row.place === 1 ? "first" : ""}>
-                <td>{getSuffix(row.place)}</td>
-                <td className="name">{row.name}</td>
-                <td>{row.value}</td>
-                <td>
-                  {change > 0 && <span className="up">▲ {change}</span>}
-                  {change < 0 && <span className="down">▼ {Math.abs(change)}</span>}
-                  {change === 0 && <span className="same">-</span>}
-                </td>
-              </tr>
-            );
-          })}
+              <td>
+                {row.iconPath && (
+                  <img
+                    src={row.iconPath}
+                    alt=""
+                    className="icon"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                )}
+              </td>
+
+              <td>{getFakeChange(row.place)}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
+
       <p className="prize">1st place prize: $20</p>
     </div>
   );
@@ -95,7 +147,7 @@ function Leaderboard({ currentData, previousData }) {
 export default function App() {
   return (
     <div className="page">
-      <Leaderboard currentData={currentData} previousData={previousData} />
+      <Leaderboard currentData={currentData} />
     </div>
   );
 }
