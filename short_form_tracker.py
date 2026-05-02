@@ -14,17 +14,18 @@ SETUP (required once):
   Linux:    google-chrome --remote-debugging-port=9222
 
   Then run:  pip install requests
-             python short_form_tracker.py
+             python short_form_tracker.py [-o LOG_FILE.json]
 """
 
 import time
 import json
 import os
+import argparse
 import requests
 from datetime import datetime
 from typing import Optional
 
-LOG_FILE = "short_form_log.json"
+LOG_FILE = "short_form_log.json"  # default, overridden by CLI arg
 POLL_INTERVAL = 1  # seconds
 DEBUG_URL = "http://localhost:9222"
 
@@ -106,6 +107,13 @@ def close_session(log: dict, platform: str, url: str, start: datetime):
 
 
 def main():
+    global LOG_FILE
+    parser = argparse.ArgumentParser(description="Track short-form video usage in Chrome")
+    parser.add_argument("-o", "--output", default=LOG_FILE,
+                        help="Path to the JSON log file (default: short_form_log.json)")
+    args = parser.parse_args()
+    LOG_FILE = args.output
+
     log = load_log()
     print("Short-Form Video Tracker")
     print(f"Logging to: {os.path.abspath(LOG_FILE)}")
